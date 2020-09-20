@@ -12,6 +12,7 @@ describe ProductsController do
       "price" => 19.95
     }
   end
+  let(:invalid_attrs) { { title: nil, description: nil, image_url: nil, price: nil } }
 
   describe "get :index" do
     before { get :index }
@@ -43,31 +44,59 @@ describe ProductsController do
   end
 
   describe "post :create" do
-    let(:last_product) { Product.last }
+    context "with valid params" do
+      let(:last_product) { Product.last }
 
-    before { post :create, params: { product: product_attrs } }
+      before { post :create, params: { product: product_attrs } }
 
-    it { expect(response).to redirect_to(last_product) }
+      it { expect(response).to redirect_to(last_product) }
 
-    it "creates product with attrs equal to params" do
-      last_product.reload
-      expect(last_product.attributes).to include(product_attrs)
+      it "creates product with attrs equal to params" do
+        last_product.reload
+        expect(last_product.attributes).to include(product_attrs)
+      end
+
+      it "increases products count" do
+        product_attrs[:title] = "Lorem Ipsum Dolor"
+        expect { post :create, params: { product: product_attrs } }
+          .to change(Product, :count).by(1)
+      end
     end
 
-    it "increases products count" do
-      expect { post :create, params: { product: product_attrs } }
-        .to change(Product, :count).by(1)
+    context "with invalid params" do
+      before { post :create, params: { product: invalid_attrs } }
+
+      it { expect(response).to render_template(:new) }
+
+      it "doesn't create new product in database" do
+        expect { post :create, params: { product: invalid_attrs } }
+          .not_to change(Product, :count)
+      end
     end
   end
 
   describe "patch :update" do
-    before { patch :update, params: { id: product, product: product_attrs } }
+    context "with valid params" do
+      before { patch :update, params: { id: product, product: product_attrs } }
 
-    it { expect(response).to redirect_to(product) }
+      it { expect(response).to redirect_to(product) }
 
-    it "update product's attrs with requested params" do
-      product.reload
-      expect(product.attributes).to include(product_attrs)
+      it "update product's attrs with requested params" do
+        product.reload
+        expect(product.attributes).to include(product_attrs)
+      end
+    end
+
+    context "with invalid params" do
+      before { patch :update, params: { id: product, product: invalid_attrs } }
+
+      it { expect(response).to render_template(:edit) }
+
+      it "doesn't update product's attrs in database" do
+        product_attrs = product.attributes
+        product.reload
+        expect(product.attributes).to eq(product_attrs)
+      end
     end
   end
 
