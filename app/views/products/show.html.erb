@@ -1,0 +1,27 @@
+<h1>Product</h1>
+
+<div class="prod-image">
+  <img src="<%= @product.image_url %>">
+</div>
+
+<div class="prod-title">
+  <p>Title:</p>
+  <p><%= @product.title %></p>
+</div>
+
+<div class="prod-description">
+  <p>Description:</p>
+  <p><%= @product.description %></p>
+</div>
+
+<div class="prod-price">
+  <p>Price:</p>
+  <p><%= @product.price %></p>
+</div>
+
+<div class="prod-links">
+  <%= link_to 'Edit', edit_product_path(@product) %> |
+  <%= link_to 'Destroy', @product, method: :delete, data: { confirm: 'Are you sure?' } %> |
+  <%= link_to 'All products', products_path %>
+</div>
+

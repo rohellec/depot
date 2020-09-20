@@ -1,0 +1,9 @@
+<h1>Edit product</h1>
+
+<%= render 'form', product: @product %>
+
+<div class="prod-links">
+  <%= link_to 'Show', product_path(@product) %> |
+  <%= link_to 'Destroy', @product, method: :delete, data: { confirm: 'Are you sure?' } %> |
+  <%= link_to 'All products', products_path %>
+</div>
